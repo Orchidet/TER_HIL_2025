@@ -1,0 +1,14 @@
+../Drivers/CMSIS/Include/core_cm4.h:1679:22:__NVIC_EnableIRQ	2
+../Drivers/CMSIS/Include/core_cm4.h:1809:22:__NVIC_SetPriority	2
+../Core/Src/TER_software.c:83:6:Update_PWM	9
+../Core/Src/TER_software.c:130:6:generate_normalized_sin_table	2
+../Core/Src/TER_software.c:145:6:USART2_Init	2
+../Core/Src/TER_software.c:159:6:USART2_SendChar	2
+../Core/Src/TER_software.c:165:6:USART2_SendMsg	2
+../Core/Src/TER_software.c:178:6:TIM1_Config_PWM	1
+../Core/Src/TER_software.c:231:6:TIM2_Config_IT	1
+../Core/Src/TER_software.c:247:6:TIM2_IRQHandler	2
+../Core/Src/TER_software.c:261:6:ADC_Init	2
+../Core/Src/TER_software.c:300:10:ADC_Read	2
+../Core/Src/TER_software.c:313:6:systickDelayMs	3
+../Core/Src/TER_software.c:330:6:systickDelayUs	3
