@@ -262,14 +262,13 @@ void ADC_Init(void)
 {
 	  RCC->AHB2ENR  |= (1 << 13); 						//Activer horloge pour l'ADC1
 	  ADC123_COMMON->CCR |= (1<<16);					//HCLK horloge d'entree du convertisseur, CK_Mode =01
+	  ADC123_COMMON->CCR &= ~(1<<17);	
 	  //ADC1->CCR |= (1<<16);							//Alternative de configuration
-	  ADC123_COMMON->CCR &= ~(1<<17);
-
+	  				
 	  //Prediviseur si ADC clock = SystemClock et CK_Mode = 00
 	  //ADC123_COMMON->CCR &= ~(1<<21) & ~(1<<20) & ~(1<<19) & ~(1<<18); /*prediviseur d'horloge ADC :  1 = 0000							*/
-
-	  ADC1->CR |= (1<<0);         						//Activation de l'ADC
-	  //ADC1->CR |= (1<<1);         					//Desactivation de l'ADC apres la fin des opérations internes ADC
+	
+	  ADC1->CR |= (1<<1);         					    //Desactivation de l'ADC 
 
 	  ADC1->CR &= ~(1<<29);   							//Desactivation du mode sommeil
 	  ADC1->SQR1 |= (0 << 0);   						//Nombre de conversion N = 2*/
@@ -281,18 +280,17 @@ void ADC_Init(void)
 	  while (!(ADC1->CR & (1<<28)));
 
 	  /*ADC calibration*/
-	  ADC1->CR &= ~(1UL<<30); 							//ADCALDIF = 0
-	  systickDelayMs(10);     							//Attendre 10 ms pour s'assurer que calibration est terminée
-
+	  ADC1->CR &= ~(1UL<<30); 							//Select calibration mode : ADCALDIF = 0 (single-ended) 
 	  ADC1->CR |= (1UL<<31);  							//Demarre la calibration de  ADC : ADCAL to 1
-	  //while ((ADC1->CR & ADC_CR_ADCAL) == (1UL<<31)); //Attendre ADCAL=0
+	
+	  while ((ADC1->CR & ADC_CR_ADCAL)); 				//Attendre ADCAL=0
 	  systickDelayMs(10);    							//Attendre 10 ms la fin de calibration de l'ADC
 
-	   //Active ADC si configuree (calibration, deep power mode off, voltage regulator on)
-	  ADC1->ISR |= 1;          							//Effacer l'état prêt de l'ADC : ADRDY = 1
+	  //Active ADC si configuree (calibration, deep power mode off, voltage regulator on)
+	  ADC1->ISR |= ADC_ISR_ADRDY;          			    //Effacer l'état prêt de l'ADC : ADRDY = 1
 
-	  ADC1->CR |= 1;           							//Activation de l'ADC ADEN = 1
-	  //while (!(ADC1->ISR & ADC_ISR_ADRDY)); 			//Attendre que ADRDY=1  (1UL<<0)
+	  ADC1->CR |= ADC1_CR_ADEN;           			    //Activation de l'ADC ADEN = 1
+	  while (!(ADC1->ISR & ADC_ISR_ADRDY)); 			//Attendre que ADRDY=1  (1UL<<0)
 
 	  systickDelayMs(10);     							//Attendre 10ms : stabilisation de ADC
 }
@@ -300,7 +298,7 @@ void ADC_Init(void)
 uint16_t ADC_Read(void)
 {
     ADC1->CR |= (1 << 2);        						//Démarrer la conversion
-    while ((ADC1->ISR & (1 << 2)) == 0x0); 				//Attendre la fin de la conversion
+    while ((ADC1->CR & (1 << 2))); 				//Attendre la fin de la conversion
     return (uint16_t)ADC1->DR;        					//Lire la valeur stockee
 }
 
